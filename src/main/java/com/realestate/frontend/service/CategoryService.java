@@ -27,13 +27,15 @@ public class CategoryService {
                 .bodyToMono(String.class)
                 .map(response -> {
                     try {
-                        return objectMapper.readValue(response, new TypeReference<List<Category>>() {});
+                        TypeReference<List<Category>> typeRef = new TypeReference<List<Category>>() {};
+                        List<Category> categories = objectMapper.readValue(response, typeRef);
+                        return categories;
                     } catch (Exception e) {
                         e.printStackTrace();
-                        return Collections.emptyList();
+                        return Collections.<Category>emptyList();
                     }
                 })
-                .onErrorReturn(Collections.emptyList());
+                .onErrorReturn(Collections.<Category>emptyList());
     }
     
     public Mono<Category> getCategoryById(Long id) {

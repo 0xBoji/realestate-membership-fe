@@ -25,13 +25,20 @@ public class AuthController {
         return "auth/login";
     }
     
-    @PostMapping("/login")
+    @PostMapping("/auth/login")
     public String login(@RequestParam String username, 
                        @RequestParam String password,
                        HttpSession session,
                        RedirectAttributes redirectAttributes) {
         try {
+            System.out.println("Attempting login for username: " + username);
             AuthResponse response = authService.login(username, password).block();
+            
+            System.out.println("Login response: " + (response != null ? "received" : "null"));
+            if (response != null) {
+                System.out.println("Token: " + (response.getToken() != null ? "exists" : "null"));
+                System.out.println("User: " + (response.getUser() != null ? response.getUser().getUsername() : "null"));
+            }
             
             if (response != null && response.getToken() != null && !response.getToken().isEmpty()) {
                 // Store token and user info in session
@@ -39,12 +46,15 @@ public class AuthController {
                 session.setAttribute("user", response.getUser());
                 session.setAttribute("authenticated", true);
                 
+                System.out.println("Login successful, redirecting to dashboard");
                 return "redirect:/dashboard";
             } else {
+                System.out.println("Login failed - invalid response");
                 redirectAttributes.addAttribute("error", "true");
                 return "redirect:/login";
             }
         } catch (Exception e) {
+            System.out.println("Login exception: " + e.getMessage());
             e.printStackTrace();
             redirectAttributes.addAttribute("error", "true");
             return "redirect:/login";
@@ -56,7 +66,7 @@ public class AuthController {
         return "auth/register";
     }
     
-    @PostMapping("/register")
+    @PostMapping("/auth/register")
     public String register(@RequestParam String username,
                           @RequestParam String email,
                           @RequestParam String password,

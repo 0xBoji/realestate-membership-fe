@@ -1,0 +1,83 @@
+# Build
+target/
+*.class
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.project
+.classpath
+.settings/
+
+# Logs
+logs/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Maven
+.mvn/
+mvnw
+mvnw.cmd
+
+# Package files
+*.jar
+*.war
+*.ear
+
+# Application properties with sensitive data
+**/application-*.properties
+!**/application-example.properties
+
+# Package Files
+*.nar
+*.zip
+*.tar.gz
+*.rar
+
+# virtual machine crash logs
+hs_err_pid*
+replay_pid*
+
+# Gradle
+.gradle/
+build/
+
+# IntelliJ IDEA
+*.iws
+*.ipr
+out/
+
+# Eclipse
+.apt_generated
+.factorypath
+.springBeans
+.sts4-cache
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# VS Code
+*.code-workspace
+
+# Spring Boot
+.spring-boot-devtools
+
+# OS specific files
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+
+# Node (if using frontend build tools)
+node_modules/
+npm-debug.log
+yarn-error.log 

@@ -63,13 +63,15 @@ public class PropertyService {
                 .bodyToMono(String.class)
                 .map(response -> {
                     try {
-                        return objectMapper.readValue(response, new TypeReference<List<Property>>() {});
+                        TypeReference<List<Property>> typeRef = new TypeReference<List<Property>>() {};
+                        List<Property> properties = objectMapper.readValue(response, typeRef);
+                        return properties;
                     } catch (Exception e) {
                         e.printStackTrace();
-                        return Collections.emptyList();
+                        return Collections.<Property>emptyList();
                     }
                 })
-                .onErrorReturn(Collections.emptyList());
+                .onErrorReturn(Collections.<Property>emptyList());
     }
     
     public Mono<PageResponse<Property>> searchProperties(String city, String district, String propertyType, 

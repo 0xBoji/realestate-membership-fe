@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Real Estate</title>
+    
+    <!-- Bootstrap CSS -->
+    <link th:href="@{/webjars/bootstrap/5.3.2/css/bootstrap.min.css}" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" th:href="@{/}">
+                <i class="fas fa-home me-2"></i>RealEstate
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/}">Trang chủ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/properties}">Bất động sản</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/memberships}">Gói thành viên</a>
+                    </li>
+                </ul>
+                
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user me-1"></i>
+                            <span th:text="${user != null ? user.fullName : 'Tài khoản'}">Tài khoản</span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item active" th:href="@{/dashboard}">Dashboard</a></li>
+                            <li><a class="dropdown-item" th:href="@{/memberships/my-membership}">Gói của tôi</a></li>
+                            <li><a class="dropdown-item" th:href="@{/my-properties}">BDS của tôi</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" th:href="@{/logout}">Đăng xuất</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-5 pt-4">
+        <!-- Welcome Section -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h2 class="mb-1">
+                                    Chào mừng, <span th:text="${user != null ? user.fullName : 'Người dùng'}">Người dùng</span>!
+                                </h2>
+                                <p class="mb-0 opacity-75">Quản lý bất động sản và tài khoản của bạn</p>
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <i class="fas fa-user-circle fa-4x opacity-50"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="row mb-4">
+            <div class="col-md-3 mb-3">
+                <div class="card dashboard-card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-building fa-2x text-primary mb-2"></i>
+                        <h4 class="fw-bold">0</h4>
+                        <p class="text-muted mb-0">Bất động sản của tôi</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card dashboard-card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-eye fa-2x text-success mb-2"></i>
+                        <h4 class="fw-bold">0</h4>
+                        <p class="text-muted mb-0">Lượt xem</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card dashboard-card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-heart fa-2x text-danger mb-2"></i>
+                        <h4 class="fw-bold">0</h4>
+                        <p class="text-muted mb-0">Yêu thích</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card dashboard-card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-crown fa-2x text-warning mb-2"></i>
+                        <h4 class="fw-bold">Cơ bản</h4>
+                        <p class="text-muted mb-0">Gói thành viên</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h4 class="fw-bold mb-3">Hành động nhanh</h4>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="card dashboard-card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-plus-circle fa-3x text-primary mb-3"></i>
+                        <h6 class="card-title">Đăng tin mới</h6>
+                        <p class="card-text text-muted small">Đăng bán hoặc cho thuê bất động sản</p>
+                        <a href="#" class="btn btn-primary btn-sm">
+                            <i class="fas fa-plus me-1"></i>Đăng tin
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="card dashboard-card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-search fa-3x text-success mb-3"></i>
+                        <h6 class="card-title">Tìm kiếm</h6>
+                        <p class="card-text text-muted small">Tìm kiếm bất động sản phù hợp</p>
+                        <a th:href="@{/properties/search}" class="btn btn-success btn-sm">
+                            <i class="fas fa-search me-1"></i>Tìm kiếm
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="card dashboard-card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-crown fa-3x text-warning mb-3"></i>
+                        <h6 class="card-title">Nâng cấp gói</h6>
+                        <p class="card-text text-muted small">Nâng cấp gói thành viên</p>
+                        <a th:href="@{/memberships}" class="btn btn-warning btn-sm">
+                            <i class="fas fa-crown me-1"></i>Nâng cấp
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="card dashboard-card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-cog fa-3x text-secondary mb-3"></i>
+                        <h6 class="card-title">Cài đặt</h6>
+                        <p class="card-text text-muted small">Quản lý thông tin tài khoản</p>
+                        <a href="#" class="btn btn-secondary btn-sm">
+                            <i class="fas fa-cog me-1"></i>Cài đặt
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activities -->
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-clock me-2"></i>Hoạt động gần đây
+                        </h5>
+                        <a href="#" class="btn btn-sm btn-outline-primary">Xem tất cả</a>
+                    </div>
+                    <div class="card-body">
+                        <div class="list-group list-group-flush">
+                            <div class="list-group-item d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-user-check fa-lg text-success"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="mb-1">Tài khoản đã được tạo</h6>
+                                    <p class="mb-1 text-muted small">Chào mừng bạn đến với RealEstate!</p>
+                                    <small class="text-muted">Hôm nay</small>
+                                </div>
+                            </div>
+                            <div class="list-group-item d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-info-circle fa-lg text-info"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="mb-1">Khám phá các tính năng</h6>
+                                    <p class="mb-1 text-muted small">Hãy bắt đầu bằng việc đăng tin bất động sản đầu tiên</p>
+                                    <small class="text-muted">Hôm nay</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mt-3">
+                            <p class="text-muted mb-0">Chưa có hoạt động nào khác</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Membership Info -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-crown me-2"></i>Gói thành viên
+                        </h5>
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            <i class="fas fa-user-circle fa-4x text-muted"></i>
+                        </div>
+                        <h6 class="fw-bold">Gói Cơ bản</h6>
+                        <p class="text-muted small mb-3">Gói miễn phí với các tính năng cơ bản</p>
+                        
+                        <div class="mb-3">
+                            <small class="text-muted">Tính năng hiện tại:</small>
+                            <ul class="list-unstyled small mt-2">
+                                <li><i class="fas fa-check text-success me-2"></i>Đăng 3 tin/tháng</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Tìm kiếm cơ bản</li>
+                                <li><i class="fas fa-times text-danger me-2"></i>Hỗ trợ ưu tiên</li>
+                                <li><i class="fas fa-times text-danger me-2"></i>Thống kê chi tiết</li>
+                            </ul>
+                        </div>
+                        
+                        <a th:href="@{/memberships}" class="btn btn-warning btn-sm">
+                            <i class="fas fa-arrow-up me-1"></i>Nâng cấp ngay
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Quick Tips -->
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h6 class="mb-0">
+                            <i class="fas fa-lightbulb me-2"></i>Mẹo hữu ích
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="small">
+                            <div class="mb-3">
+                                <strong>Tăng hiệu quả đăng tin:</strong>
+                                <p class="mb-0 text-muted">Sử dụng ảnh chất lượng cao và mô tả chi tiết để thu hút khách hàng.</p>
+                            </div>
+                            <div class="mb-3">
+                                <strong>Quản lý tin đăng:</strong>
+                                <p class="mb-0 text-muted">Cập nhật thông tin thường xuyên để tin đăng luôn chính xác.</p>
+                            </div>
+                            <div>
+                                <strong>Tương tác với khách:</strong>
+                                <p class="mb-0 text-muted">Phản hồi nhanh chóng các câu hỏi để tăng cơ hội thành công.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Getting Started Guide -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card border-primary">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-rocket me-2"></i>Hướng dẫn bắt đầu
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <div class="d-flex">
+                                    <div class="flex-shrink-0">
+                                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                            <strong>1</strong>
+                                        </div>
+                                    </div>
+                                    <div class="flex-grow-1 ms-3">
+                                        <h6 class="fw-bold">Hoàn thiện hồ sơ</h6>
+                                        <p class="text-muted small mb-0">Cập nhật thông tin cá nhân và ảnh đại diện</p>
+                                        <a href="#" class="small">Cập nhật ngay →</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="d-flex">
+                                    <div class="flex-shrink-0">
+                                        <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                            <strong>2</strong>
+                                        </div>
+                                    </div>
+                                    <div class="flex-grow-1 ms-3">
+                                        <h6 class="fw-bold">Đăng tin đầu tiên</h6>
+                                        <p class="text-muted small mb-0">Tạo tin đăng bất động sản đầu tiên của bạn</p>
+                                        <a href="#" class="small">Đăng tin ngay →</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="d-flex">
+                                    <div class="flex-shrink-0">
+                                        <div class="bg-warning text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                            <strong>3</strong>
+                                        </div>
+                                    </div>
+                                    <div class="flex-grow-1 ms-3">
+                                        <h6 class="fw-bold">Khám phá tính năng</h6>
+                                        <p class="text-muted small mb-0">Tìm hiểu các tính năng nâng cao của hệ thống</p>
+                                        <a href="#" class="small">Tìm hiểu →</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5><i class="fas fa-home me-2"></i>RealEstate</h5>
+                    <p>Nền tảng bất động sản hàng đầu Việt Nam</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Liên kết nhanh</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-light text-decoration-none">Về chúng tôi</a></li>
+                        <li><a href="#" class="text-light text-decoration-none">Liên hệ</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>Theo dõi chúng tôi</h5>
+                    <div class="d-flex gap-3">
+                        <a href="#" class="text-light"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-light"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-light"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="text-center">
+                <p>&copy; 2024 RealEstate. Tất cả quyền được bảo lưu.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script th:src="@{/webjars/bootstrap/5.3.2/js/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/webjars/jquery/3.7.1/jquery.min.js}"></script>
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>

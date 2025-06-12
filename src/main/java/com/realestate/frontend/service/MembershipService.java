@@ -28,13 +28,15 @@ public class MembershipService {
                 .bodyToMono(String.class)
                 .map(response -> {
                     try {
-                        return objectMapper.readValue(response, new TypeReference<List<Membership>>() {});
+                        TypeReference<List<Membership>> typeRef = new TypeReference<List<Membership>>() {};
+                        List<Membership> memberships = objectMapper.readValue(response, typeRef);
+                        return memberships;
                     } catch (Exception e) {
                         e.printStackTrace();
-                        return Collections.emptyList();
+                        return Collections.<Membership>emptyList();
                     }
                 })
-                .onErrorReturn(Collections.emptyList());
+                .onErrorReturn(Collections.<Membership>emptyList());
     }
     
     public Mono<Membership> getMembershipById(Long id) {
@@ -72,12 +74,14 @@ public class MembershipService {
                 .bodyToMono(String.class)
                 .map(response -> {
                     try {
-                        return objectMapper.readValue(response, new TypeReference<List<Object>>() {});
+                        TypeReference<List<Object>> typeRef = new TypeReference<List<Object>>() {};
+                        List<Object> history = objectMapper.readValue(response, typeRef);
+                        return history;
                     } catch (Exception e) {
                         e.printStackTrace();
-                        return Collections.emptyList();
+                        return Collections.<Object>emptyList();
                     }
                 })
-                .onErrorReturn(Collections.emptyList());
+                .onErrorReturn(Collections.<Object>emptyList());
     }
 }

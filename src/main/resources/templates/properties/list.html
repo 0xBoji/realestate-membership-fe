@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh sách bất động sản - Real Estate</title>
+    
+    <!-- Bootstrap CSS -->
+    <link th:href="@{/webjars/bootstrap/5.3.2/css/bootstrap.min.css}" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" th:href="@{/}">
+                <i class="fas fa-home me-2"></i>RealEstate
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/}">Trang chủ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" th:href="@{/properties}">Bất động sản</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/properties/search}">Tìm kiếm</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/memberships}">Gói thành viên</a>
+                    </li>
+                </ul>
+                
+                <ul class="navbar-nav">
+                    <th:block th:if="${session.authenticated}">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user me-1"></i>
+                                <span th:text="${session.user != null ? session.user.fullName : 'Tài khoản'}">Tài khoản</span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" th:href="@{/dashboard}">Dashboard</a></li>
+                                <li><a class="dropdown-item" th:href="@{/logout}">Đăng xuất</a></li>
+                            </ul>
+                        </li>
+                    </th:block>
+                    <th:block th:unless="${session.authenticated}">
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/login}">Đăng nhập</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/register}">Đăng ký</a>
+                        </li>
+                    </th:block>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-5 pt-4">
+        <!-- Page Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="fw-bold">Danh sách bất động sản</h2>
+                        <p class="text-muted">
+                            Tìm thấy 
+                            <span th:text="${properties.totalElements}">0</span> 
+                            bất động sản
+                        </p>
+                    </div>
+                    <div>
+                        <a th:href="@{/properties/search}" class="btn btn-primary">
+                            <i class="fas fa-search me-2"></i>Tìm kiếm nâng cao
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter and Sort -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <form method="get" class="row g-3">
+                            <div class="col-md-3">
+                                <label class="form-label">Sắp xếp theo</label>
+                                <select name="sortBy" class="form-select">
+                                    <option value="createdAt" th:selected="${sortBy == 'createdAt'}">Ngày tạo</option>
+                                    <option value="price" th:selected="${sortBy == 'price'}">Giá</option>
+                                    <option value="title" th:selected="${sortBy == 'title'}">Tiêu đề</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Thứ tự</label>
+                                <select name="sortDir" class="form-select">
+                                    <option value="desc" th:selected="${sortDir == 'desc'}">Giảm dần</option>
+                                    <option value="asc" th:selected="${sortDir == 'asc'}">Tăng dần</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Hiển thị</label>
+                                <select name="size" class="form-select">
+                                    <option value="12" th:selected="${properties.size == 12}">12 per page</option>
+                                    <option value="24" th:selected="${properties.size == 24}">24 per page</option>
+                                    <option value="48" th:selected="${properties.size == 48}">48 per page</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 d-flex align-items-end">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-filter me-2"></i>Áp dụng
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Properties Grid -->
+        <div class="row">
+            <th:block th:if="${properties.content != null and !properties.content.isEmpty()}">
+                <div th:each="property : ${properties.content}" class="col-lg-4 col-md-6 mb-4">
+                    <div class="card property-card h-100">
+                        <div class="position-relative">
+                            <img th:src="${property.images != null and !property.images.isEmpty() ? property.images[0].imageUrl : '/images/default-property.jpg'}" 
+                                 class="card-img-top property-image" alt="Property Image">
+                            <div class="position-absolute top-0 end-0 m-2">
+                                <span class="badge bg-primary" th:text="${property.listingTypeDisplay}">Bán</span>
+                            </div>
+                            <th:block th:if="${property.featured}">
+                                <div class="position-absolute top-0 start-0 m-2">
+                                    <span class="badge bg-warning"><i class="fas fa-star"></i> Nổi bật</span>
+                                </div>
+                            </th:block>
+                        </div>
+                        
+                        <div class="card-body">
+                            <h5 class="card-title" th:text="${property.title}">Tiêu đề bất động sản</h5>
+                            <p class="text-muted mb-2">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span th:text="${property.address + ', ' + property.district + ', ' + property.city}">Địa chỉ</span>
+                            </p>
+                            
+                            <div class="row text-muted small mb-2">
+                                <div class="col" th:if="${property.bedrooms != null}">
+                                    <i class="fas fa-bed"></i> <span th:text="${property.bedrooms}">0</span> phòng ngủ
+                                </div>
+                                <div class="col" th:if="${property.bathrooms != null}">
+                                    <i class="fas fa-bath"></i> <span th:text="${property.bathrooms}">0</span> phòng tắm
+                                </div>
+                                <div class="col" th:if="${property.area != null}">
+                                    <i class="fas fa-ruler-combined"></i> <span th:text="${property.area}">0</span> m²
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h6 class="text-primary fw-bold" th:text="${property.formattedPrice}">Giá</h6>
+                                <span class="badge bg-secondary" th:text="${property.propertyTypeDisplay}">Loại</span>
+                            </div>
+                            
+                            <p class="card-text text-muted small mt-2" th:text="${#strings.abbreviate(property.description, 100)}">
+                                Mô tả ngắn gọn về bất động sản...
+                            </p>
+                        </div>
+                        
+                        <div class="card-footer bg-transparent">
+                            <div class="d-flex gap-2">
+                                <a th:href="@{/properties/{id}(id=${property.id})}" class="btn btn-primary flex-fill">
+                                    <i class="fas fa-eye me-1"></i>Xem chi tiết
+                                </a>
+                                <button class="btn btn-outline-primary" title="Yêu thích">
+                                    <i class="fas fa-heart"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </th:block>
+            
+            <th:block th:if="${properties.content == null or properties.content.isEmpty()}">
+                <div class="col-12 text-center py-5">
+                    <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">Không tìm thấy bất động sản nào</h5>
+                    <p class="text-muted">Hãy thử tìm kiếm với các tiêu chí khác hoặc quay lại sau</p>
+                    <a th:href="@{/properties/search}" class="btn btn-primary">
+                        <i class="fas fa-search me-2"></i>Tìm kiếm nâng cao
+                    </a>
+                </div>
+            </th:block>
+        </div>
+
+        <!-- Pagination -->
+        <div class="row mt-4" th:if="${properties.totalPages > 1}">
+            <div class="col-12">
+                <nav aria-label="Property pagination">
+                    <ul class="pagination justify-content-center">
+                        <!-- Previous Button -->
+                        <li class="page-item" th:classappend="${properties.first} ? 'disabled'">
+                            <a class="page-link" 
+                               th:href="${properties.first} ? '#' : @{/properties(page=${currentPage - 1}, size=${properties.size}, sortBy=${sortBy}, sortDir=${sortDir})}">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        </li>
+                        
+                        <!-- Page Numbers -->
+                        <th:block th:each="pageNum : ${#numbers.sequence(0, properties.totalPages - 1)}">
+                            <li class="page-item" th:if="${pageNum >= currentPage - 2 and pageNum <= currentPage + 2}"
+                                th:classappend="${pageNum == currentPage} ? 'active'">
+                                <a class="page-link" 
+                                   th:href="@{/properties(page=${pageNum}, size=${properties.size}, sortBy=${sortBy}, sortDir=${sortDir})}"
+                                   th:text="${pageNum + 1}">1</a>
+                            </li>
+                        </th:block>
+                        
+                        <!-- Next Button -->
+                        <li class="page-item" th:classappend="${properties.last} ? 'disabled'">
+                            <a class="page-link" 
+                               th:href="${properties.last} ? '#' : @{/properties(page=${currentPage + 1}, size=${properties.size}, sortBy=${sortBy}, sortDir=${sortDir})}">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+                
+                <div class="text-center text-muted">
+                    Trang <span th:text="${currentPage + 1}">1</span> 
+                    trên <span th:text="${properties.totalPages}">1</span>
+                    (Tổng <span th:text="${properties.totalElements}">0</span> bất động sản)
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5><i class="fas fa-home me-2"></i>RealEstate</h5>
+                    <p>Nền tảng bất động sản hàng đầu Việt Nam</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Liên kết nhanh</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-light text-decoration-none">Về chúng tôi</a></li>
+                        <li><a href="#" class="text-light text-decoration-none">Liên hệ</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>Theo dõi chúng tôi</h5>
+                    <div class="d-flex gap-3">
+                        <a href="#" class="text-light"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-light"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-light"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="text-center">
+                <p>&copy; 2024 RealEstate. Tất cả quyền được bảo lưu.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script th:src="@{/webjars/bootstrap/5.3.2/js/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/webjars/jquery/3.7.1/jquery.min.js}"></script>
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>

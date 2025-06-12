@@ -17,17 +17,11 @@ public class SecurityConfig {
             .authorizeHttpRequests(authz -> authz
                 .requestMatchers("/", "/home", "/login", "/register", "/properties", "/properties/**", 
                                "/categories", "/categories/**", "/webjars/**", "/css/**", "/js/**", 
-                               "/images/**", "/static/**").permitAll()
-                .requestMatchers("/dashboard/**", "/my-properties/**", "/memberships/**", 
-                               "/chat/**", "/profile/**").authenticated()
+                               "/images/**", "/static/**", "/auth/**", "/dashboard/**", 
+                               "/my-properties/**", "/memberships/**", "/chat/**", "/profile/**").permitAll()
                 .anyRequest().authenticated()
             )
-            .formLogin(form -> form
-                .loginPage("/login")
-                .defaultSuccessUrl("/dashboard", true)
-                .failureUrl("/login?error=true")
-                .permitAll()
-            )
+            .formLogin(form -> form.disable()) // Disable Spring Security's default form login
             .logout(logout -> logout
                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                 .logoutSuccessUrl("/")

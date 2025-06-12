@@ -17,9 +17,11 @@ public class AuthService {
     
     public Mono<AuthResponse> login(String username, String password) {
         Map<String, String> loginRequest = Map.of(
-            "username", username,
+            "usernameOrEmail", username,  // Fixed: backend expects usernameOrEmail
             "password", password
         );
+        
+        System.out.println("Calling API: POST /auth/login with usernameOrEmail: " + username);
         
         return webClient.post()
                 .uri("/auth/login")
@@ -27,16 +29,36 @@ public class AuthService {
                 .bodyValue(loginRequest)
                 .retrieve()
                 .bodyToMono(AuthResponse.class)
+                .doOnSuccess(response -> {
+                    System.out.println("API Response Success: " + (response != null ? "received" : "null"));
+                    if (response != null) {
+                        System.out.println("Response token: " + (response.getToken() != null ? "exists" : "null"));
+                    }
+                })
+                .doOnError(error -> {
+                    System.out.println("API Error: " + error.getMessage());
+                    if (error.getMessage().contains("400")) {
+                        System.out.println("🚨 400 Bad Request - Check username/password or user existence");
+                    }
+                })
                 .onErrorReturn(new AuthResponse()); // Return empty response on error
     }
     
     public Mono<AuthResponse> register(String username, String email, String password, String fullName) {
+        // Split fullName into firstName and lastName
+        String[] nameParts = fullName.trim().split("\\s+", 2);
+        String firstName = nameParts[0];
+        String lastName = nameParts.length > 1 ? nameParts[1] : "";
+        
         Map<String, String> registerRequest = Map.of(
             "username", username,
             "email", email,
             "password", password,
-            "fullName", fullName
+            "firstName", firstName,  // Fixed: backend expects firstName
+            "lastName", lastName     // Fixed: backend expects lastName
         );
+        
+        System.out.println("Calling API: POST /auth/register with username: " + username);
         
         return webClient.post()
                 .uri("/auth/register")
@@ -44,6 +66,12 @@ public class AuthService {
                 .bodyValue(registerRequest)
                 .retrieve()
                 .bodyToMono(AuthResponse.class)
+                .doOnSuccess(response -> {
+                    System.out.println("Register API Response Success: " + (response != null ? "received" : "null"));
+                })
+                .doOnError(error -> {
+                    System.out.println("Register API Error: " + error.getMessage());
+                })
                 .onErrorReturn(new AuthResponse()); // Return empty response on error
     }
 }
